@@ -2,8 +2,11 @@ const {
   findById,
   selectFourthCharacter,
   findByBlood,
-} = require("../content/submission");
-const characters = require("../content/characters.json");
+} = require("../to-test/to-test-temp");
+
+console.log(process.argv);
+
+const characters = require("../to-test/characters.json");
 
 describe("Testing ATC assessment submission", () => {
   describe("#selectFourthCharacter", () => {
