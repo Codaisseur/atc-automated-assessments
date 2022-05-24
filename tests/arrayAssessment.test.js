@@ -9,13 +9,13 @@ console.log(process.argv);
 const characters = require("../to-test/characters.json");
 
 describe("Testing ATC assessment submission", () => {
-  describe("#selectFourthCharacter", () => {
+  describe("1", () => {
     test("Should return the 4th character in the array", () => {
       expect(selectFourthCharacter()).toEqual(characters[3]);
     });
   });
 
-  describe("#findById", () => {
+  describe("2", () => {
     test("Should return the correct character", () => {
       expect(findById(13).id).toEqual(13);
       expect(findById(34).name).toEqual("Remus Lupin");

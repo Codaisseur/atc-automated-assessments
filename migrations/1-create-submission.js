@@ -1,7 +1,7 @@
 "use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("tests", {
+    await queryInterface.createTable("submissions", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,17 +14,23 @@ module.exports = {
       class: {
         type: Sequelize.STRING,
       },
-      testType: {
-        type: Sequelize.STRING,
-      },
       score: {
         type: Sequelize.STRING,
       },
-      results: {
+      questions: {
         type: Sequelize.ARRAY(Sequelize.TEXT),
       },
       filename: {
         type: Sequelize.STRING,
+      },
+      testId: {
+        type: Sequelize.INTEGER,
+        refernces: {
+          type: "tests",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
       createdAt: {
         allowNull: false,
@@ -37,6 +43,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("tests");
+    await queryInterface.dropTable("submissions");
   },
 };

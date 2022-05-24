@@ -1,6 +1,7 @@
 const jest = require("jest");
 const fs = require("fs");
 const Test = require("./models").test;
+const Submission = require("./models").submission;
 
 const test = async (name) => {
   const jestConfig = {
@@ -10,15 +11,13 @@ const test = async (name) => {
     silent: true,
   };
 
-  console.log("jest", jest);
-
   const results = await jest.runCLI(jestConfig, ["./"]);
   return results.results;
 };
 
-const copyFile = async (name, testType) => {
-  const filename = `./codes/${name}-${testType}.js`;
-  await fs.copyFile("./to-test/to-test-temp-hola.js", filename, (err) => {
+const copyFile = async (name, testKey) => {
+  const filename = `./codes/${name}-${testKey}.js`;
+  await fs.copyFile("./to-test/to-test-temp.js", filename, (err) => {
     if (err) {
       console.log("Error Found:", err);
     }
@@ -27,22 +26,28 @@ const copyFile = async (name, testType) => {
   return filename;
 };
 
-const storeResults = async (name, classNr, filename, testType, results) => {
+const storeResults = async (name, classNr, filename, testKey, results) => {
   const totalScore = `${results["numPassedTests"]}/${results["numTotalTests"]}`;
 
   console.log("results", results["testResults"][0]["testResults"]);
 
   const questions = results["testResults"][0]["testResults"].map((r) =>
-    JSON.stringify({ question: r.title, status: r.status })
+    JSON.stringify({
+      question: r.title,
+      status: r.status,
+      number: r.ancestorTitles[r.ancestorTitles.length - 1],
+    })
   );
 
-  const stored = await Test.create({
+  const test = await Test.findOne({ where: { key: testKey } });
+
+  const stored = await Submission.create({
     name,
     class: classNr,
     filename: filename,
-    results: questions,
+    questions,
     score: totalScore,
-    testType,
+    testId: test.id,
   });
 
   return stored;

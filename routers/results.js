@@ -2,6 +2,8 @@ const { Router } = require("express");
 const multer = require("multer");
 
 const { test, copyFile, storeResults } = require("../utils");
+const Test = require("../models").test;
+const Submission = require("../models").submission;
 const router = new Router();
 
 const storage = multer.diskStorage({
@@ -19,11 +21,11 @@ router.post("/submit", upload.single("code"), async (req, res, next) => {
   try {
     console.log("req.file hello?", req.file);
 
-    const { name, classNr, testType } = req.body;
+    const { name, classNr, testKey } = req.body;
     const parsedName = req.body.name.replace(" ", "").toLowerCase();
 
     // make a copy of code file
-    const filename = await copyFile(parsedName, testType);
+    const filename = await copyFile(parsedName, testKey);
 
     // run tests
     const results = await test(parsedName);
@@ -32,11 +34,34 @@ router.post("/submit", upload.single("code"), async (req, res, next) => {
       name,
       classNr,
       filename,
-      testType,
-      results,
-      testType
+      testKey,
+      results
     );
     res.send(stored);
+  } catch (e) {
+    console.log(e.message);
+    next(e);
+  }
+});
+
+router.get("/results/:testKey", async (req, res, next) => {
+  try {
+    const { testKey } = req.params;
+    console.log("testKey", testKey);
+    const test = await Test.findOne({
+      where: { key: testKey },
+      include: [Submission],
+    });
+
+    console.log(test);
+
+    const parsedSubmissions = test.submissions.map((r) => ({
+      ...r.dataValues,
+      questions: r.questions.map((q) => JSON.parse(q)),
+      testKey: test.key,
+    }));
+
+    res.send({ ...test.dataValues, submissions: parsedSubmissions });
   } catch (e) {
     console.log(e.message);
     next(e);
