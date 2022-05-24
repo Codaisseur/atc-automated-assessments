@@ -8,7 +8,7 @@ const router = new Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "to-test/");
+    cb(null, `tests/${req.body.testKey}`);
   },
   filename: (req, file, cb) => {
     cb(null, `to-test-temp.js`);

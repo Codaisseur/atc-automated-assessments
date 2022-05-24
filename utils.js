@@ -36,6 +36,7 @@ const storeResults = async (name, classNr, filename, testKey, results) => {
       question: r.title,
       status: r.status,
       number: r.ancestorTitles[r.ancestorTitles.length - 1],
+      error: r.failureMessages,
     })
   );
 
